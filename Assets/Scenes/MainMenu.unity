@@ -3502,6 +3502,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 4f593ec11cb5cce4cae360c9c6445f24,
         type: 2}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: StartRaduis
+      value: 89
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: RaduisDecreasePercent
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: LevelScene
+      value: Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: LevelCreatingScene
+      value: LevelCreationScene
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c30d4f412d6def42b7bb2e7bc23e288, type: 3}
 --- !u!114 &4705403601795286890 stripped

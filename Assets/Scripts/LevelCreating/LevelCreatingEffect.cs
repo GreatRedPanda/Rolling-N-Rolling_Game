@@ -29,11 +29,7 @@ public class LevelCreatingEffect : MonoBehaviour
 
     private void Update()
     {
-        //if (SoundEffectsPlayer.SoundLevel == 0)
-        //{
-        //    RotatingSound.loop = false;
-        //    RotatingSound.Stop();
-        //}
+
     }
     public void Rotating(bool rotating)
     {

@@ -10,8 +10,18 @@ public class GameController : MonoBehaviour
     public RectTransform RotationParent;
     public RectTransform ArrowPrefab;
     public LevelCreatingEffect LevelCreatingEffect;
-  protected  List<Rotator> Rotators = new List<Rotator>();
+ 
+    public GameObject TrailPainter;
+    public LineRenderer ShowTrailPainter;
 
+   
+    [SerializeField]
+     RectTransform SaveDialog;
+
+    [SerializeField]
+    TextMeshProUGUI SaveResultTxt;
+
+   protected  List<Rotator> rotators = new List<Rotator>();
     Vector2 baseSize;
     public float decreasePercent;
     public float ArrowOnScreenMax = 5;
@@ -23,24 +33,23 @@ public class GameController : MonoBehaviour
 
     public Vector2 childArrowOffset = new Vector2(-1, 1);
 
+    float circleFill = 0;
 
-    
-    public GameObject TrailPainter;
-    public LineRenderer ShowTrailPainter;
+    List<float> angles = new List<float>();
+    List<float> radiuses = new List<float>();
+    List<int> speeds = new List<int>();
 
-   
-    [SerializeField]
-     RectTransform SaveDialog;
 
-    [SerializeField]
-    TextMeshProUGUI SaveResultTxt;
+    float[] startAngles;
+
+
     void Start()
     {
         TrailPainter.transform.localEulerAngles = new Vector3(0, 0, 135 );// +Rotators[0].transform.localEulerAngles;
         ShowTrailPainter.transform.localEulerAngles = new Vector3(0, 0, 135);// + Rotators[0].transform.localEulerAngles;
 
         CalculateArrowSize(Vector2.one);
-        AddArrow(1, 1, false, Rotators);
+        AddArrow(1, 1, false, rotators);
     }
 
 
@@ -82,7 +91,7 @@ public class GameController : MonoBehaviour
     {
         addingSpeed = speed;
 
-        AddArrow(addingDir, addingSpeed, false, Rotators);
+        AddArrow(addingDir, addingSpeed, false, rotators);
     }
 
    
@@ -102,21 +111,20 @@ public class GameController : MonoBehaviour
            r.transform.localScale = Vector3.one;
            r.transform.localPosition = Vector2.zero;
             r.sizeDelta = new Vector2(baseSize.x, baseSize.y);
-            //Debug.Log(r.sizeDelta +"  b  "+  r.sizeDelta.magnitude);
+
         }
         else
         {
             RectTransform prevRo = arrows[arrows.Count - 1].GetComponent<RectTransform>();
             r.transform.SetParent(prevRo.transform);
             r.transform.localScale = Vector3.one;
-            //r.transform.localRotation = prevRo.localRotation;
+   
             r.transform.localPosition = Vector2.zero+new Vector2( prevRo.sizeDelta.x* childArrowOffset.x, prevRo.sizeDelta.y* childArrowOffset.y);
             r.sizeDelta = prevRo.sizeDelta*decreasePercent;
-            Debug.Log(r.sizeDelta + "  1  " + r.sizeDelta.magnitude);
+
 
         }
-        //if (forSolutio)
-        //    r.GetComponent<Image>().enabled = false;
+   
         rr.Number = arrows.Count;
         rr.Direction = direction;
         rr.Speed = speed;
@@ -129,11 +137,10 @@ public class GameController : MonoBehaviour
           TrailPainter.GetComponent<LineDrawer>().ClearPositions();
           getAngleSum(arrows);
       
-  circleFill = 0;
-
-
-
+       circleFill = 0;
     }
+
+
     Vector3 getAngleSum(List<Rotator> arrows)
     {
         Vector3 res = Vector3.zero;
@@ -145,24 +152,14 @@ public class GameController : MonoBehaviour
             startAngles[i] = angles[i];
 
         }
-
-
-
         return res;
     }
 
 
-    float circleFill = 0;
 
-    List<float> angles=new List<float>();
-    List<float> radiuses = new List<float>();
-    List<int> speeds = new List<int>();
-
-
-    float[] startAngles;
     public void GetPosition()
     {
-        if (Rotators.Count == 0 )
+        if (rotators.Count == 0 )
             return;
 
         float     X = 0;
@@ -210,15 +207,15 @@ public class GameController : MonoBehaviour
     public void Clear()
     {
 
-        for (int i = 0; i < Rotators.Count; i++)
+        for (int i = 0; i < rotators.Count; i++)
         {
-        Rigidbody2D r=    Rotators[i].gameObject.AddComponent<Rigidbody2D>();
-            Rotators[i].Clear();
-         Rotators[i].enabled = false;
+        Rigidbody2D r=    rotators[i].gameObject.AddComponent<Rigidbody2D>();
+            rotators[i].Clear();
+         rotators[i].enabled = false;
             r.AddTorque(speeds[i]*Random.Range(50, 100));
-            Destroy(Rotators[i].gameObject, 2f);
+            Destroy(rotators[i].gameObject, 2f);
         }
-        Rotators.Clear();
+        rotators.Clear();
 
         radiuses.Clear();
         angles.Clear();
@@ -236,9 +233,9 @@ public class GameController : MonoBehaviour
 
         GameDataSaver gds= FindObjectOfType<GameDataSaver>();
         bool success = false;
-        if (gds != null && Rotators.Count >= 1)
+        if (gds != null && rotators.Count >= 1)
         {
-
+            Debug.Log(rotators.Count+"    "+speeds.Count+"    "+ startAngles.Length);
             success= gds.AddLevel(speeds.ToArray(), startAngles);
         }
 

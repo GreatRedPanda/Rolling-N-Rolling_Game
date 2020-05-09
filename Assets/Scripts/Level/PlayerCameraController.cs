@@ -2,29 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-public class PlayerController : MonoBehaviour
+public class PlayerCameraController : MonoBehaviour
 {
+    public event System.Action<int> OnTouch;
 
 
     public CameraRotationBehaviour RotationBehaviour;
-    public event System.Action<int> OnTouch;
+    public float MouseDelta = 1.5f;
   
-    float coolDownTime = 0;
-    Ray ray;
+    public Vector2 Speed;
+
+
     [HideInInspector]
     public bool AllowToPlay = false;
 
-
     bool swiping = false;
-
-    public float MouseDelta = 1.5f;
     bool isOverUI;
-
-
+    float coolDownTime = 0;
+    Ray ray;
     Vector3 mouseprevPos;
+    bool rotationStarted = false;
 
-
-    public Vector2 Speed;
     void Update()
     {
 
@@ -34,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
 
     }
-    bool rotationStarted = false;
+
 
     void input()
     {
@@ -146,18 +144,13 @@ public class PlayerController : MonoBehaviour
   
 
 
-    bool CheckUIClick(Vector3 pos)
+    bool checkUIClick(Vector3 pos)
     {
         bool clickOnUIElement = false;
 
         Ray r = Camera.main.ScreenPointToRay(pos);
         if(Physics.Raycast(r, 200, LayerMask.GetMask("UI")))
             clickOnUIElement = true;
-
-
-
-        //// bool clickOnUIElement = EventSystem.current.IsPointerOverGameObject();
-        //Debug.Log("OverBtn"+ clickOnUIElement);
         return clickOnUIElement;
     }
     

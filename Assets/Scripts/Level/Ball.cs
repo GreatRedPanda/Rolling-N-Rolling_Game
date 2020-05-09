@@ -7,7 +7,11 @@ public enum MoveType { none,forward, backward, wait, flight}
 public class Ball : MonoBehaviour
 {
     public event System.Action<int, Ball, Ball, float> OnBallReachedTarget;
+
     public string Type;
+    public MoveType State = MoveType.none;
+    public bool CatchingUp = false;
+    public bool MainBackward = false;
 
     [HideInInspector]
     public float Progress;
@@ -26,18 +30,7 @@ public class Ball : MonoBehaviour
     Ball _targetBall;
     bool _isMoving = false;
     float deltaPos = 1f;
-
-
-    public MoveType State = MoveType.none;
-
-
-
-    public bool CatchingUp = false;
-    public bool MainBackward = false;
-
-    
     Vector3 flyDirection;
-
     Ray dir;
     private void OnTriggerEnter(Collider other)
     {
@@ -59,25 +52,7 @@ public class Ball : MonoBehaviour
             }
 
         }
-        //else
-        //{
-        //    if (other.GetComponent<Ball>() != null)
-        //    {
-        //        Ball b = other.GetComponent<Ball>();
-        //        if (this != b)
-        //        {
-        //            Ball left;
-        //            Ball right;
-        //            RollingLogic.Instance.GetBallNeighbourLeft(this, out left);
-        //            RollingLogic.Instance.GetBallNeighbourRight(this, out right);
-        //            float distance = Mathf.Abs(Progress - b.Progress);
-        //           // Debug.Log(distance + );
-        //            if (  (b == left || b == right ) &&  distance < 2 * RollingLogic.Instance.ballSizePercent*Time.deltaTime)  // добавить про направление
-        //                RollingLogic.Instance.Shift(this);
-        //        }
 
-        //    }
-        //}
     }
 
     public void ClearState()
@@ -89,30 +64,12 @@ public class Ball : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        //if(State!=MoveType.flight)
-        //if (other.GetComponent<Ball>() != null)
-        //{
-        //    Ball b = other.GetComponent<Ball>();
-        //    if (this != b)
-        //    {
-        //        Ball left;
-        //        Ball right;
-        //        RollingLogic.Instance.GetBallNeighbourLeft(this, out left);
-        //        RollingLogic.Instance.GetBallNeighbourRight(this, out right);
-        //        float distance = Mathf.Abs(Progress - b.Progress);
-        //        // Debug.Log(distance + );
-        //        if ((b == left || b == right) && distance < 2 * RollingLogic.Instance.ballSizePercent * Time.deltaTime)  // добавить про направление
-        //            RollingLogic.Instance.Shift(this);
-        //    }
-
-        //}
+       
     }
     private void OnTriggerExit(Collider other)
     {
         if (State == MoveType.flight && other.tag == "Bounds")
         {
-
-            //Debug.Log(other.tag);
             State = MoveType.none;
             gameObject.SetActive(false);
         }
@@ -123,10 +80,7 @@ public class Ball : MonoBehaviour
     {
 
         _isMoving = true;
-        //_targetBall = targetBall;
-        //_targetIndex = index;
-        //_targetPos = targetPos;
-        //_targetProgress = targetProgress;
+
         transform.position = Camera.main.transform.position - Camera.main.transform.forward * CameraOffsetForward;
         flyDirection = direction.direction;
         State = MoveType.flight;
@@ -158,22 +112,13 @@ public class Ball : MonoBehaviour
     void fly()
     {
 
-        //if (!_isMoving)
-        //    return;
-   
-        
-            //_targetPos += flyDirection;
-            //transform.position = Vector3.Lerp(transform.position, _targetPos, Time.deltaTime * FlightSpeed);
-        flightDistance += Time.deltaTime * FlightSpeed*20;
+              flightDistance += Time.deltaTime * FlightSpeed*20;
         transform.position = dir.GetPoint(flightDistance);
-        //else
-        //{
 
-        //}
     }
     private void Move()
     {
-        Progress += Time.deltaTime * RollingLogic.Instance.currentSpeed * RollingLogic.Instance.ballSizePercent;
+        Progress += Time.deltaTime * RollingLogic.Instance.CurrentSpeed * RollingLogic.Instance.BallSizePercent;
         float pg = 0;
         Vector3 newPos = RollingLogic.Instance.Path.GetArcParametrizedTime(Progress, ref pg);
         transform.position = Vector3.Lerp(transform.position, newPos , Time.deltaTime * RollingLogic.Instance.LerpSpeed);
@@ -206,7 +151,7 @@ public class Ball : MonoBehaviour
 
     void rollBack()
     {
-      Progress -= Time.deltaTime * RollingLogic.Instance.currentSpeed* RollingLogic.Instance.HitsCount*2 * RollingLogic.Instance.ballSizePercent;
+      Progress -= Time.deltaTime * RollingLogic.Instance.CurrentSpeed* RollingLogic.Instance.HitsCount*2 * RollingLogic.Instance.BallSizePercent;
         float pg = 0;
         Vector3 newPos = RollingLogic.Instance.Path.GetArcParametrizedTime(Progress, ref pg);
         transform.position = Vector3.Lerp(transform.position, newPos , Time.deltaTime * RollingLogic.Instance.LerpSpeed);
@@ -223,10 +168,10 @@ public class Ball : MonoBehaviour
 
                 if (target.Type == Type)
                 {
-                    if (Progress <= target.Progress + 2 * RollingLogic.Instance.ballSizePercent)
+                    if (Progress <= target.Progress + 2 * RollingLogic.Instance.BallSizePercent)
                     {
 
-                        Progress = target.Progress + 2 * RollingLogic.Instance.ballSizePercent;
+                        Progress = target.Progress + 2 * RollingLogic.Instance.BallSizePercent;
                         MainBackward = false;
                         RollingLogic.Instance.GetBack(this, target);
 
@@ -267,10 +212,10 @@ public class Ball : MonoBehaviour
 
             if (target.Type != Type)
             {
-                if (Progress >= target.Progress - 2 * RollingLogic.Instance.ballSizePercent)
+                if (Progress >= target.Progress - 2 * RollingLogic.Instance.BallSizePercent)
                 {
                     CatchingUp = false;
-                    Progress = target.Progress - 2 * RollingLogic.Instance.ballSizePercent;
+                    Progress = target.Progress - 2 * RollingLogic.Instance.BallSizePercent;
                     RollingLogic.Instance.CaughtUp(this, target);
                 }
             }
@@ -284,7 +229,7 @@ public class Ball : MonoBehaviour
         //    CatchingUp = false;
     }
 
-    public bool DestroyAsterBackToPos()
+    public bool DestroyAfterBackToPos()
     {
 
         bool result = false;

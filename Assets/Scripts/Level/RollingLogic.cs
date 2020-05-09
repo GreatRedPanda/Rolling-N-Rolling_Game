@@ -6,6 +6,13 @@ public class RollingLogic : MonoBehaviour
 {
 
     public event System.Action<int,int> OnScoreChanged;
+
+
+
+     public static RollingLogic Instance;
+
+
+    public EffectsPlayer EffectsPlayer;
     public Pooler Pooler;
     public LevelDataView LevelDataView;
     public BezierSolution.BezierSpline Path;
@@ -13,90 +20,90 @@ public class RollingLogic : MonoBehaviour
     public List<int> TimeDeltas;
     [HideInInspector]
     public List<string> PoolNamesUsing;
-
     public float SpeedLimit;
     public Transform Parent;
-
-    List<Ball> _balls=new List<Ball>();
     public Transform PortalsObject;
-    public   float ballSizePercent;
-    public float deltaY = -5;
+    public   float BallSizePercent;
+    public float DeltaY = -5;
     public float Speed;
     public float LostSpeed;
     public float LerpSpeed;
 
+    public float Radius;
+    public float speedChangeSpeed = 0.05f;
 
-
-
-    [HideInInspector]
-    public float currentSpeed;
-    bool lockMove = false;
-    bool lost = false;
-    bool initialized = false;
-    System.Action currentMoveMethod;
-    Queue<string> nextBallsPool = new Queue<string>();
-    LevelData _levelParams;
-    int score;
-    int startCount = 10;
-
-    public int HitsCount { get {
+    public int HitsCount
+    {
+        get
+        {
 
             if (hitsCount == 0)
                 return 2;
             else
-                return hitsCount+2;} }
+                return hitsCount + 2;
+        }
+    }
+
+    [HideInInspector]
+    public float CurrentSpeed;
+
+    System.Action currentMoveMethod;
+
+    List<Ball> balls=new List<Ball>();
+    bool lockMove = false;
+    bool lost = false;
+    bool initialized = false; 
+    Queue<string> nextBallsPool = new Queue<string>();
+    LevelData levelParams;
+    int score;
+    int startCount = 10;
     int hitsCount = 0;
-     float speedIncrease = 5;
-
-    public EffectsPlayer EffectsPlayer;
-    List<System.Action> actions = new List<System.Action>();
-
-
-    public static RollingLogic Instance;
-
-
-  
+    float speedIncrease = 5;
     int increaseCOunt = 0;
-    float Timer = 0;
-    public float speedChangeSpeed = 0.05f;
-  
+    float timer = 0;
+
+
+
     private void Start()
     {
 
         Instance = this;
       
         OnScoreChanged += FindObjectOfType<LevelDataView>().SetBestScore;
-        CountScore(0);
+
     }
+
+
+
     public void InitializeLevel(LevelData levelParams, float[] radiuses)
     {
-        currentSpeed = Speed;
-
+        CurrentSpeed = Speed;
 
         initialized = true;    
-        FindObjectOfType<PathGenerator>().CreateLevelPath(Path, levelParams, radiuses, deltaY);
-        _levelParams = levelParams;
-        ballSizePercent = 2f / Path.Length;
+        FindObjectOfType<PathGenerator>().CreateLevelPath(Path, levelParams, radiuses, DeltaY);
+        this.levelParams = levelParams;
+        BallSizePercent = 2f / Path.Length;
         Path.InitializeArcs(Path.Count);
         PortalsObject.position = Path.GetPoint(0);
         createStartBalls();
         speedIncrease =  (1-1 / (Path.Length/100))/Radius*speedChangeSpeed;
-
-        //Debug.Log("SPEADE INCREASE " + speedIncrease);
-
+        CountScore(0);
     }
+
+
 
     void CountScore(int ballsCount)
     {
         
         score += ballsCount*(increaseCOunt+1) +(hitsCount+1) *(increaseCOunt+1);
-        if (_levelParams.BestScore < score)
+        if (levelParams.BestScore < score)
         {
-            _levelParams.BestScore = score;
+            levelParams.BestScore = score;
         }
 
-        OnScoreChanged?.Invoke(score, _levelParams.BestScore);
+        OnScoreChanged?.Invoke(score, levelParams.BestScore);
     }
+
 
     private void Update()
     {
@@ -111,17 +118,17 @@ public class RollingLogic : MonoBehaviour
 
    
 
-    void moveBall(Ball b)
-    {
-        float pg = 0;
-        Vector3 newPos = Path.GetArcParametrizedTime(b.Progress, ref pg);
-       b.transform.position = Vector3.Lerp(b.transform.position, newPos+b.Offset, Time.deltaTime * LerpSpeed);
+    //void moveBall(Ball b)
+    //{
+    //    float pg = 0;
+    //    Vector3 newPos = Path.GetArcParametrizedTime(b.Progress, ref pg);
+    //   b.transform.position = Vector3.Lerp(b.transform.position, newPos+b.Offset, Time.deltaTime * LerpSpeed);
 
-    }
+    //}
     void moveAlongSpline(List<Ball> balls)
     {
 
-        if (balls.Count == 0 || balls[balls.Count - 1].Progress >= 2 * ballSizePercent )
+        if (balls.Count == 0 || balls[balls.Count - 1].Progress >= 2 * BallSizePercent )
         {
             addBallToChain();
         }
@@ -129,7 +136,7 @@ public class RollingLogic : MonoBehaviour
 
         if (balls[0].Progress >= 1f)
         {
-            currentSpeed = LostSpeed;
+            CurrentSpeed = LostSpeed;
             lost = true;
             //currentMoveMethod = () =>
             {
@@ -150,27 +157,27 @@ public class RollingLogic : MonoBehaviour
     }
 
 
-    bool moveLost(List<Ball> balls)
-    {
-        bool allDisabled = false;
+    //bool moveLost(List<Ball> balls)
+    //{
+    //    bool allDisabled = false;
        
-        for (int i = 0; i < balls.Count; i++)
-        {
+    //    for (int i = 0; i < balls.Count; i++)
+    //    {
 
-            balls[i].Progress += Time.deltaTime * currentSpeed * ballSizePercent;
-                moveBall(balls[i]);
-                if (balls[i].Progress >= 1)
-                {
-                balls[i].gameObject.SetActive(false);
-                balls.RemoveAt(i);
-                }
+    //        balls[i].Progress += Time.deltaTime * currentSpeed * ballSizePercent;
+    //            moveBall(balls[i]);
+    //            if (balls[i].Progress >= 1)
+    //            {
+    //            balls[i].gameObject.SetActive(false);
+    //            balls.RemoveAt(i);
+    //            }
             
   
-        }
-        if ( balls.Count==0)
-            allDisabled = true;
-        return allDisabled;
-    }
+    //    }
+    //    if ( balls.Count==0)
+    //        allDisabled = true;
+    //    return allDisabled;
+    //}
 
 
     public void GetNewBallPlace(Ray direction)
@@ -201,16 +208,16 @@ public class RollingLogic : MonoBehaviour
             {
            
               
-                _balls[i].Progress += 2 * ballSizePercent;
+                balls[i].Progress += 2 * BallSizePercent;
                 float percentProgress = 0;
-                _balls[i].transform.position = Path.GetArcParametrizedTime(_balls[i].Progress, ref percentProgress);
+                balls[i].transform.position = Path.GetArcParametrizedTime(balls[i].Progress, ref percentProgress);
                 //if (_balls[i].CatchingUp && progressDistance > Radius)
                 //    break;
 
                 if(i-1>=0)
-                progressDistance = Mathf.Abs(_balls[i].Progress- _balls[i - 1].Progress);
+                progressDistance = Mathf.Abs(balls[i].Progress- balls[i - 1].Progress);
 
-                if (progressDistance > 2 * ballSizePercent)
+                if (progressDistance > 2 * BallSizePercent)
                 {
 
                     Debug.Log(i +"    "+(i-1));
@@ -223,9 +230,9 @@ public class RollingLogic : MonoBehaviour
         {
             for (int i = startIndex; i >= 0; i--)
             {
-                _balls[i].Progress += 2 * ballSizePercent;
+                balls[i].Progress += 2 * BallSizePercent;
                 float percentProgress = 0;
-                _balls[i].transform.position = Path.GetArcParametrizedTime(_balls[i].Progress, ref percentProgress);
+                balls[i].transform.position = Path.GetArcParametrizedTime(balls[i].Progress, ref percentProgress);
            
 
             }
@@ -269,7 +276,7 @@ public class RollingLogic : MonoBehaviour
 
        // b.transform.SetParent(Parent);
         b.transform.position = Path.GetPoint(0);
-        _balls.Add(b);
+        balls.Add(b);
         b.Progress = 0;
         b.State = MoveType.forward;
        
@@ -283,7 +290,7 @@ public class RollingLogic : MonoBehaviour
 
         Ball b = null;
 
-        b= _balls.Find(x => Mathf.Abs(x.Progress -progress)<0.005f);
+        b= balls.Find(x => Mathf.Abs(x.Progress -progress)<0.005f);
         return b;
 
     }
@@ -292,19 +299,19 @@ public class RollingLogic : MonoBehaviour
     {
    
 
-        index = _balls.IndexOf(targetBall);
+        index = balls.IndexOf(targetBall);
         //Debug.Log(index);
 
-        if (index < 0 || index>_balls.Count-1)
+        if (index < 0 || index>balls.Count-1)
             return;
         lockMove = true;
 
         float percentProgress = 0;
 
         //closeer to finish
-        Vector3 positionLeft = Path.GetArcParametrizedTime(targetBall.Progress+2 * ballSizePercent, ref percentProgress);
+        Vector3 positionLeft = Path.GetArcParametrizedTime(targetBall.Progress+2 * BallSizePercent, ref percentProgress);
         //closeer to start
-        Vector3 positionRight = Path.GetArcParametrizedTime(targetBall.Progress - 2 * ballSizePercent, ref percentProgress);
+        Vector3 positionRight = Path.GetArcParametrizedTime(targetBall.Progress - 2 * BallSizePercent, ref percentProgress);
 
         Vector3 contactPoint = b.transform.position;
         float dtFinish = Vector3.Distance(positionLeft, contactPoint);
@@ -321,7 +328,7 @@ public class RollingLogic : MonoBehaviour
         }
 
 
-        _balls.Insert(newIndex, b);  // здесь
+        balls.Insert(newIndex, b); 
         b.Progress = targetBall.Progress;
      
         b.transform.position = targetBall.transform.position;
@@ -356,20 +363,20 @@ public class RollingLogic : MonoBehaviour
 
         for (int i = index - 1; i >= 0; i--)
         {
-            if (_balls[i].Type == b.Type)
+            if (balls[i].Type == b.Type)
             {
-                if (_balls[i].MainBackward)
+                if (balls[i].MainBackward)
                 return true;
             }
             else
                 break;
         }
 
-        for (int i = index + 1; i < _balls.Count; i++)
+        for (int i = index + 1; i < balls.Count; i++)
         {
-            if (_balls[i].Type == b.Type)
+            if (balls[i].Type == b.Type)
             {
-                if (_balls[i].MainBackward)
+                if (balls[i].MainBackward)
                     return true;
                 //if (b.CatchingUp)
                 //    return true;
@@ -388,28 +395,28 @@ public class RollingLogic : MonoBehaviour
 
         int fromIndex;
         int toIndex;
-        List<Ball> ballsToDestroy = GetBallsToDestroy(index, _balls, out fromIndex, out toIndex);
+        List<Ball> ballsToDestroy = GetBallsToDestroy(index, balls, out fromIndex, out toIndex);
 
 
 
         Ball ballDestroyNFrom = null;
 
         if (fromIndex - 1 >= 0)
-            ballDestroyNFrom = _balls[fromIndex - 1];
+            ballDestroyNFrom = balls[fromIndex - 1];
         Ball ballDestroyNTo = null;
 
-        if (toIndex + 1 < _balls.Count)
-            ballDestroyNTo = _balls[toIndex + 1];
+        if (toIndex + 1 < balls.Count)
+            ballDestroyNTo = balls[toIndex + 1];
 
         if (ballsToDestroy.Count >= 3)
         {
             EffectsPlayer.PlayEffect(ballsToDestroy);
-            DestroyBalls(_balls, ballsToDestroy, hitBack);
+            DestroyBalls(balls, ballsToDestroy, hitBack);
           
-            fromIndex = _balls.IndexOf(ballDestroyNFrom);
+            fromIndex = balls.IndexOf(ballDestroyNFrom);
 
 
-            toIndex = _balls.IndexOf(ballDestroyNTo);
+            toIndex = balls.IndexOf(ballDestroyNTo);
 
             if (ballDestroyNFrom != null && ballDestroyNTo != null)
 
@@ -428,7 +435,7 @@ public class RollingLogic : MonoBehaviour
             {
                 if (ballDestroyNTo == null && ballDestroyNFrom!=null)
                 {
-                    fromIndex = _balls.IndexOf(ballDestroyNFrom);
+                    fromIndex = balls.IndexOf(ballDestroyNFrom);
                     SetBallsBack(fromIndex, ballDestroyNFrom);
                 }
 
@@ -444,8 +451,8 @@ public class RollingLogic : MonoBehaviour
 
     public void SetBallsBack(Ball ballDestroyNFrom, Ball ballDestroyNTo)
     {
-        int fromIndex = _balls.IndexOf(ballDestroyNFrom);
-        int toIndex = _balls.IndexOf(ballDestroyNTo);
+        int fromIndex = balls.IndexOf(ballDestroyNFrom);
+        int toIndex = balls.IndexOf(ballDestroyNTo);
         SetBallsBack(fromIndex, ballDestroyNFrom);
 
     }
@@ -455,8 +462,8 @@ public class RollingLogic : MonoBehaviour
         for (int i = fromIndex; i >= 0; i--)
         {
 
-            _balls[i].State = MoveType.backward;
-            if (_balls[i].CatchingUp || _balls[i].MainBackward)
+            balls[i].State = MoveType.backward;
+            if (balls[i].CatchingUp || balls[i].MainBackward)
                 break;
         }
         gapBall.SetBackward();
@@ -466,8 +473,8 @@ public class RollingLogic : MonoBehaviour
 
     public void SetBallsWait(Ball ballDestroyNFrom,  Ball ballDestroyNTo)
     {
-       int  fromIndex = _balls.IndexOf(ballDestroyNFrom);
-       int   toIndex = _balls.IndexOf(ballDestroyNTo);
+       int  fromIndex = balls.IndexOf(ballDestroyNFrom);
+       int   toIndex = balls.IndexOf(ballDestroyNTo);
        SetBallsWait(fromIndex, toIndex, ballDestroyNTo);
 
     }
@@ -476,15 +483,15 @@ public class RollingLogic : MonoBehaviour
     {
         for (int i = fromIndex; i >= 0; i--)
         {
-            if (_balls[i].MainBackward )
+            if (balls[i].MainBackward )
                 break;
-            _balls[i].State = MoveType.wait;
+            balls[i].State = MoveType.wait;
 
         }
-        for (int i = toIndex; i < _balls.Count; i++)
+        for (int i = toIndex; i < balls.Count; i++)
         {
-            if (_balls[i].State != MoveType.wait && !_balls[i].MainBackward)
-                _balls[i].State = MoveType.forward;
+            if (balls[i].State != MoveType.wait && !balls[i].MainBackward)
+                balls[i].State = MoveType.forward;
         }
         gapBall.SetCatchingUp();
 
@@ -493,36 +500,36 @@ public class RollingLogic : MonoBehaviour
     public void GetBack(Ball b, Ball targetBall)
     {
        
-        int index = _balls.IndexOf(b);
+        int index = balls.IndexOf(b);
 
         for (int i = index; i >= 0; i--)
         {
-            if (_balls[i].MainBackward)
+            if (balls[i].MainBackward)
                 break;
             if (targetBall!=null)
-            _balls[i].State = targetBall.State;
+            balls[i].State = targetBall.State;
             else
-                _balls[i].State = MoveType.forward;
-            if (_balls[i].CatchingUp)
+                balls[i].State = MoveType.forward;
+            if (balls[i].CatchingUp)
                 break;
         }
-     bool destroy=   getDestroyable(_balls.IndexOf(targetBall), true);
+     bool destroy=   getDestroyable(balls.IndexOf(targetBall), true);
         if(!destroy)
         EffectsPlayer.SpheresCollided();
 
     }
     public void CaughtUp(Ball b, Ball caughtBall)
     {
-        //Debug.Log("CAUGHT UO");
-        int prevIndex= _balls.IndexOf(b);
-        int index = _balls.IndexOf(caughtBall);
+        
+        int prevIndex= balls.IndexOf(b);
+        int index = balls.IndexOf(caughtBall);
         for (int i = index; i>=0; i--)
         {
-            if(_balls[i].MainBackward)
+            if(balls[i].MainBackward)
                 break;
            
-            _balls[i].State = MoveType.forward;
-            if (_balls[i].CatchingUp)
+            balls[i].State = MoveType.forward;
+            if (balls[i].CatchingUp)
                 break;
         }
         EffectsPlayer.SpheresCollided();
@@ -533,22 +540,22 @@ public class RollingLogic : MonoBehaviour
     public void GetBallNeighbourRight(Ball b, out Ball neighbour)
     {
 
-        int index = _balls.IndexOf(b);
+        int index = balls.IndexOf(b);
         int neighIndex = index - 1;
 
         if (neighIndex >= 0)
-            neighbour = _balls[neighIndex];
+            neighbour = balls[neighIndex];
         else
             neighbour = null;
     }
     public void GetBallNeighbourLeft(Ball b, out Ball neighbour)
     {
 
-        int index = _balls.IndexOf(b);
+        int index = balls.IndexOf(b);
         int neighIndex = index +1;
 
-        if (neighIndex<_balls.Count)
-            neighbour = _balls[neighIndex];
+        if (neighIndex<balls.Count)
+            neighbour = balls[neighIndex];
         else
             neighbour = null;
     }
@@ -622,15 +629,15 @@ public class RollingLogic : MonoBehaviour
         score = 0;
         CountScore(0);
         currentMoveMethod = () => { };
-        for (int i = 0; i < _balls.Count; i++)
+        for (int i = 0; i < balls.Count; i++)
         {
-            _balls[i].gameObject.SetActive(false);
+            balls[i].gameObject.SetActive(false);
 
         }
-        _balls.Clear();
+        balls.Clear();
         nextBallsPool.Clear();
 
-        currentSpeed = Speed;
+        CurrentSpeed = Speed;
         createStartBalls();
         lost = false;
     }
@@ -642,9 +649,9 @@ public class RollingLogic : MonoBehaviour
         {
             return;
         }
-        if (Timer > TimeDeltas[increaseCOunt])
+        if (timer > TimeDeltas[increaseCOunt])
         {
-            Timer = 0;
+            timer = 0;
 
             increaseCOunt++;
             if (PoolNamesUsing.Count < PoolsNames.Length)
@@ -654,20 +661,20 @@ public class RollingLogic : MonoBehaviour
 
             }
 
-            if (currentSpeed < SpeedLimit)
+            if (CurrentSpeed < SpeedLimit)
             {
-                currentSpeed += currentSpeed*speedIncrease;
+                CurrentSpeed += CurrentSpeed*speedIncrease;
             }
         }
 
-        Timer += Time.deltaTime;
+        timer += Time.deltaTime;
     }
 
 
-    public float Radius;
+  
     void createStartBalls()
     {
-        Timer = 0;
+        timer = 0;
     
         increaseCOunt = 0;
 
@@ -686,14 +693,14 @@ public class RollingLogic : MonoBehaviour
 
             //Debug.Log("RADIUS "+ Radius);
             b.gameObject.SetActive(true);
-            _balls.Add(b);
-            b.Progress = 2 * ballSizePercent * (startCount - i - 1);
+            balls.Add(b);
+            b.Progress = 2 * BallSizePercent * (startCount - i - 1);
             b.State = MoveType.forward;
         }
 
 
         shiftBalls(startCount - 1, true);
-        currentMoveMethod = () => { moveAlongSpline(_balls); };
+        currentMoveMethod = () => { moveAlongSpline(balls); };
         nextBallsPool.Enqueue(getRandomPrefab());
         nextBallsPool.Enqueue(getRandomPrefab());
         nextBallsPool.Enqueue(getRandomPrefab());

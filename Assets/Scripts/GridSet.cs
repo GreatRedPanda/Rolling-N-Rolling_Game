@@ -5,22 +5,22 @@ public class GridSet : MonoBehaviour
 {
 
     public bool UseFullScreenSize;
-    Material m;
-    Vector2 size;
+   
 
     public int GridSize;
 
    public Vector2 offset = Vector2.zero;
     public float LineSize = 0.1f;
+
+
     float scaleFactor;
-
-
     public float TileCoef = 100;
-
     Vector2 panningOffset = Vector2.zero;
-
-
+    Material m;
+    Vector2 size;
     RectTransform rectTransform;
+
+
     void Start()
     {
          m = GetComponent<Image>().material;

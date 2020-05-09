@@ -14,29 +14,32 @@ public class GameDataSaver : MonoBehaviour
     private static extern void WindowAlert(string message);
 
 
-    public DefaultLevelsContainer DefaultLevelsContainer;
+    public static LevelData LastLevel;
     public static List<LevelDataLoaded> levels = new List<LevelDataLoaded>();
+    public static LevelData CurrentLevel;
+
+
+    public DefaultLevelsContainer DefaultLevelsContainer;  
     public string LevelCreatingScene;
     public string LevelScene;
     public string MainMenuScene;
-
-    public float startRaduis;
-    public float raduisDecreasePercent;
-
-    //public  static GameDataSaver Instance;
-    public static LevelData CurrentLevel;
+    public float StartRaduis;
+    public float RaduisDecreasePercent; 
     public string FileName = "levels.dscrp";
 
 
     static bool levelsWasLoaded = false;
-
-
-    string BestScoresDefaultLevels;
-
     static string lastLevelKey;
-    public static LevelData LastLevel;
+
+    string bestScoresDefaultLevels;
+
+
+
     private void Awake()
     {
+
+        Debug.Log(SceneManager.GetActiveScene().name + "   " + LevelScene);
+
         GamePause(false);
         loadPlayerPrefs();
         LoadLevels();
@@ -44,14 +47,13 @@ public class GameDataSaver : MonoBehaviour
         {
 
             setPlayingLevel(DefaultLevelsContainer.Levels[0]);
+
             if (SceneManager.GetActiveScene().name == LevelScene)
             {
 
-                FindObjectOfType<RollingLogic>().InitializeLevel(CurrentLevel, GetRadiuses(CurrentLevel.Speeds.Length, startRaduis, raduisDecreasePercent));
+                FindObjectOfType<RollingLogic>().InitializeLevel(CurrentLevel, GetRadiuses(CurrentLevel.Speeds.Length, StartRaduis, RaduisDecreasePercent));
             }
         }
-
-
         LevelsLoader lLoader = FindObjectOfType<LevelsLoader>();
         if (lLoader != null)
             lLoader.LoadLevelsUI();
@@ -90,8 +92,11 @@ public class GameDataSaver : MonoBehaviour
 
         levelsWasLoaded = true;
         string path = getFilePath();
+
         if (File.Exists(path))
         {
+
+            Debug.Log(path);
             try
             {
                 BinaryFormatter bf = new BinaryFormatter();
@@ -110,7 +115,7 @@ public class GameDataSaver : MonoBehaviour
     }
 
 
-    void SaveLevels()
+    void saveLevels()
     {
         BinaryFormatter bf = new BinaryFormatter();
         string path = getFilePath();
@@ -158,9 +163,13 @@ public class GameDataSaver : MonoBehaviour
             level.Key = key;
             levels.Add(level);
             success = true;
-            float[] radiuses = GetRadiuses(level.Speeds.Length, startRaduis, raduisDecreasePercent);
+            float[] radiuses = GetRadiuses(level.Speeds.Length, StartRaduis, RaduisDecreasePercent);
+
+
             Vector3[] positions = PathGenerator.GetPositions(level, radiuses);
             Texture2D texture2D = PathGenerator.MakeTexture(positions, radiuses);
+
+
             string name = "level_" + System.DateTime.Now.ToFileTime();
             string path = getTextureFilePath(name);
             if (path == "")
@@ -240,7 +249,7 @@ public class GameDataSaver : MonoBehaviour
         if (SceneManager.GetActiveScene().name == LevelScene)
         {
 
-            FindObjectOfType<RollingLogic>().InitializeLevel(CurrentLevel, GetRadiuses(CurrentLevel.Speeds.Length, startRaduis, raduisDecreasePercent));
+            FindObjectOfType<RollingLogic>().InitializeLevel(CurrentLevel, GetRadiuses(CurrentLevel.Speeds.Length, StartRaduis, RaduisDecreasePercent));
         }
 
 
@@ -286,7 +295,7 @@ public class GameDataSaver : MonoBehaviour
         {
             savePrefs();
 
-            SaveLevels();
+            saveLevels();
         }
     }
 
@@ -302,7 +311,7 @@ public class GameDataSaver : MonoBehaviour
     }
     private void OnApplicationQuit()
     {
-        SaveLevels();
+        saveLevels();
     }
 
 

@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: {fileID: 1167974310}
-  TrailPainter: {fileID: 0}
+  TrailPainter: {fileID: 1167974310}
   Box: {fileID: 659575201}
 --- !u!114 &822323454
 MonoBehaviour:
@@ -1295,9 +1295,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RotationBehaviour: {fileID: 443578658}
-  AllowToPlay: 0
   MouseDelta: 1.5
   Speed: {x: 30, y: 30}
+  AllowToPlay: 0
 --- !u!114 &822323455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1330,6 +1330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7fd8bd4a8270d409629aab15985e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EffectsPlayer: {fileID: 822323457}
   Pooler: {fileID: 731569990}
   LevelDataView: {fileID: 1105899611}
   Path: {fileID: 2025177475}
@@ -1349,15 +1350,14 @@ MonoBehaviour:
   SpeedLimit: 15
   Parent: {fileID: 2132029944}
   PortalsObject: {fileID: 74264049}
-  ballSizePercent: 0
-  deltaY: -5
+  BallSizePercent: 0.02
+  DeltaY: -5
   Speed: 2
   LostSpeed: 10
   LerpSpeed: 5
-  currentSpeed: 0
-  EffectsPlayer: {fileID: 822323457}
+  Radius: 3
   speedChangeSpeed: 0.05
-  Radius: 0
+  CurrentSpeed: 0
 --- !u!114 &822323457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1379,10 +1379,17 @@ MonoBehaviour:
   LostColor: {r: 0.41509432, g: 0.39355642, b: 0.39355642, a: 0.34901962}
   DangerColor2: {r: 0.41509432, g: 0.32768956, b: 0.23300105, a: 0.27058825}
   Portal: {fileID: 74264047}
-  possibleCOlors:
-  - {r: 0.16834284, g: 0.8673609, b: 0.9150943, a: 1}
-  - {r: 0.9652157, g: 1, b: 0.426, a: 1}
-  - {r: 1, g: 0.41037738, b: 0.41037738, a: 1}
+  possiblePortalColors:
+  - {r: 0.9811321, g: 0.7724105, b: 0.38412246, a: 1}
+  - {r: 1, g: 0.5613208, b: 0.9678844, a: 1}
+  - {r: 0.8490566, g: 0.11614456, b: 0.11614456, a: 1}
+  - {r: 0.4405482, g: 0.9433962, b: 0.51407784, a: 1}
+  - {r: 0.2971698, g: 0.99297523, b: 1, a: 1}
+  - {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
+  - {r: 0.82156056, g: 0.32894266, b: 0.9056604, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 0.9937319, b: 0.10849059, a: 1}
+  - {r: 0, g: 0.033422947, b: 1, a: 1}
   Speed: 2
   RollSound: {fileID: 1623417620}
   DestroySound: SoundDestroy
@@ -1617,6 +1624,32 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GameScenesLoader
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: StartRaduis
+      value: 89
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: RaduisDecreasePercent
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: DefaultLevelsContainer
+      value: 
+      objectReference: {fileID: 11400000, guid: 4f593ec11cb5cce4cae360c9c6445f24,
+        type: 2}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: LevelCreatingScene
+      value: LevelCreationScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 4705403600769989865, guid: 3c30d4f412d6def42b7bb2e7bc23e288,
+        type: 3}
+      propertyPath: LevelScene
+      value: Level
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c30d4f412d6def42b7bb2e7bc23e288, type: 3}

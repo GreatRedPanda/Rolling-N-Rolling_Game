@@ -8,81 +8,12 @@ using System;
 
 public class PathGenerator : MonoBehaviour
 {
-   // public BezierSpline Spline;
-  
-    //public GameObject Circle1;
 
-    //public GameObject Circle2;
-    //public GameObject Circle3;
-    //public GameObject PathDrawer;
-
-    //public PathSpline MovePath;
     public LineRenderer Path;
     public LineRenderer TrailPainter;
-
-    //float X, Y,Z;
-    //float X1, Y1, Z1;
-    //float X2, Y2, Z2;
-    //public GameObject Arrow1;
-
-
-    //public float Speed=10;
-    //public float Radius;
-
     public BoxCollider Box;
 
 
-  //  float[] radiusesq = new float[] { 89, 71, 57, 45 };//{ 89, 71, 57, 45,36,29,23, 18.6f }
-  //  float[] angles = new float[4] { 8.32f, -3.92f, 1.925f, 0 };// { 14.07f, -6.83f, 4.135f, 0};
-
-
-  //  int[] speedsq = new int[] { 3, -5, 5, -1 };//,-3,3,-5,5};
-
-
-  //  private void Start()
-  //  {
-  //      Vector3[] positions = GetPositions(speedsq, radiusesq, angles);
-  //      Path.positionCount = positions.Length;
-  //      Path.SetPositions(positions);
-
-   
-  //Texture2D t=      MakeTexture(positions, radiusesq);
-
-  //      string filePath = System.IO.Path.Combine(Application.persistentDataPath, "text" + ".png");
-  //      File.WriteAllBytes(filePath, (byte[])t.EncodeToPNG());
-
-
-  //  }
-
-  //  float circleFill = 0;
-  //  public void GetPosition()
-  //  {
-
-  //      if (circleFill >= 2 * Mathf.PI)
-  //          return;
-  //      float X = 0;
-  //      float Y = 0;
-  //      int prevSpeed = 0;
-  //      circleFill += Time.deltaTime * Rotator.AllSpeed * Mathf.PI / (180);
-  //      for (int i = 0; i < radiusesq.Length; i++)
-  //      {
-  //          prevSpeed += speedsq[i];
-
-  //          angles[i] += (prevSpeed) * Time.deltaTime * Rotator.AllSpeed * Mathf.PI / (180);
-
-  //          X += radiusesq[i] * Mathf.Cos(angles[i]);
-  //          Y += radiusesq[i] * Mathf.Sin(angles[i]);
-
-  //      }
-  //      TrailPainter.GetComponent<LineDrawer>().AddPosition(new Vector2(X, Y));
-  //  }
-  //  void Update()
-  //  {
-
-
-  //      GetPosition();
-
-  //  }
 
     public void CreateLevelPath(BezierSpline Spline, LevelData level, float[] radiuses, float deltaY)
     {
@@ -102,15 +33,12 @@ public class PathGenerator : MonoBehaviour
 
         Spline.ConstructLinearPath();
         
-
-
     }
 
 
     List<Vector3> GetPositionsIn3D(Bounds bounds, LevelData level, float[] radiuses, float deltaY)
     {
 
-        //  float[] radiuses = level.Radiuses;
         float[] angles = new float[level.StartAngles.Length];// (level.StartAngles);
         Array.Copy(level.StartAngles, angles, angles.Length);
         int[] speeds = level.Speeds;

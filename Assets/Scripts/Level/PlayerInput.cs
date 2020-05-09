@@ -8,7 +8,7 @@ public class PlayerInput : MonoBehaviour
     public RollingLogic RollingLogic;
     public LayerMask HitMask;
     public Transform CameraRot;
-   public Material pointerTraceMaterial;
+    public Material pointerTraceMaterial;
 
     public EffectsPlayer EffectsPlayer;
     // Start is called before the first frame update

@@ -61,23 +61,8 @@ public class LevelsLoader : MonoBehaviour
 
     public void Load(RectTransform pagesParent, RectTransform pagePrefab, LevelButton levelBtnPrefab, List<LevelData> levels, LevelData lastlevel, int levelsOnPage)
     {
-
-       // getLevelImageSize(pagesParent, levelsOnPage);
-        RectTransform currentPage = null;
         for (int i = 0; i < levels.Count; i++)
-        {
-            //if (i == 0 || (i) % (levelsOnPage) == 0)
-            //{
-
-            //    RectTransform lvlPage = Instantiate(pagePrefab);           
-            //    lvlPage.transform.SetParent(pagesParent);
-            //    lvlPage.transform.localScale = Vector3.one;
-            //    lvlPage.offsetMin = Vector2.zero;
-            //    lvlPage.offsetMax = Vector2.zero;
-            //    currentPage = lvlPage;
-
-            //}
-           
+        {          
             LevelButton btn = Instantiate(levelBtnPrefab);
 
             btn.transform.SetParent(LevelsParent);

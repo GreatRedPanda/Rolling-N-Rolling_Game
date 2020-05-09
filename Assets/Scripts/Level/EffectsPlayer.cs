@@ -12,25 +12,23 @@ public class EffectsPlayer : MonoBehaviour
     public Color DangerColor;
     public Color LostColor;
     public Color DangerColor2;
-    Color currentColor;
     public Renderer Portal;
-    public List<Color> possibleCOlors = new List<Color>();
-    int currentCOlor = 0;
+    public List<Color> possiblePortalColors = new List<Color>();
     public float Speed;
-    float dt;
-    float dt_DangerColorLerp;
-
-    float lineCompletePercent;
-
     public AudioSource RollSound;
-
     public string DestroySound;
     public string ShootSound;
     public string DefeatSound;
     public string CollisionSound;
-
-
     public SoundEffectsPlayer SoundEffectsPlayer;
+
+    int currentPortalColorIndex = 0; 
+    float dt;
+    float dt_DangerColorLerp;
+    float lineCompletePercent;
+     Color currentColor;
+
+ 
     void Start()
     {
         currentColor = DangerColor;
@@ -42,15 +40,15 @@ public class EffectsPlayer : MonoBehaviour
         {
             dt = 0;
 
-            currentCOlor++;
-            if(currentCOlor==possibleCOlors.Count)
-                currentCOlor = 0;
+            currentPortalColorIndex++;
+            if(currentPortalColorIndex==possiblePortalColors.Count)
+                currentPortalColorIndex = 0;
         }
-        int next = currentCOlor + 1;
-        if (next == possibleCOlors.Count)
+        int next = currentPortalColorIndex + 1;
+        if (next == possiblePortalColors.Count)
             next = 0;
-        Color cur = possibleCOlors[currentCOlor];
-        Color nextCol = possibleCOlors[next];
+        Color cur = possiblePortalColors[currentPortalColorIndex];
+        Color nextCol = possiblePortalColors[next];
         Color newColor = Color.Lerp(cur, nextCol, dt);
         dt += Time.deltaTime* Speed;
 
@@ -188,9 +186,8 @@ public class EffectsPlayer : MonoBehaviour
 
         if (go != null)
         {
-         
-
-            AudioSource audioSource= go.GetComponent<AudioSource>();
+        
+           AudioSource audioSource= go.GetComponent<AudioSource>();
 
             if (audioSource != null)
             {
@@ -199,7 +196,4 @@ public class EffectsPlayer : MonoBehaviour
             }
         }
     }
-
-
-
 }

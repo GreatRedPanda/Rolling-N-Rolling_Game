@@ -6,7 +6,7 @@ public class Zoom : MonoBehaviour
 {
 
     public CanvasScaler Scaler;
-  [SerializeField]  float currentScale = 1;
+   
 
     public float maxScale;
     public float minScale;
@@ -18,14 +18,17 @@ public class Zoom : MonoBehaviour
     public float mouseSensitivity = 1;
     private Vector3 lastPosition;
 
-    Vector3 lastImgPos;
+   
     public float GridZoomSpeed = 1;
     public float GridPanSpeed = 1;
 
     float prevScale = 1;
-
-
+    [SerializeField]  float currentScale = 1;
+    Vector3 lastImgPos;
     bool startPanning = false;
+
+
+
     void Zooming(ref float increment)
     {
         currentScale += increment;
@@ -72,7 +75,7 @@ public class Zoom : MonoBehaviour
     public void ToCenter()
     {
         imageToZoom.localPosition = Vector2.zero;
-       // GridSet.ClearOffset();
+
     }
 
 

@@ -15,12 +15,21 @@ public class CameraRotationBehaviour : MonoBehaviour
     public float YSmoothDampSpeed = 10;
     public float ScaleSpeed = 0.002f;
     public GameObject RotateObj;
+  public float Distance { get { return radius; } }
+
+
+
+    static public float turnAngleDelta;
+    const float pinchTurnRatio = Mathf.PI / 2;
+    const float minTurnAngle = 0;
+    static public float turnAngle;
+
     Vector2 prevInput;
 
     Vector2 newInput;
     bool inputStart = false;
 
-    public float Distance { get { return radius; } }
+  
     Camera cam;
 
     float radius = 10;
@@ -32,7 +41,24 @@ public class CameraRotationBehaviour : MonoBehaviour
 
     Vector3 targetEulers;
     float currentYRotation;
-    // Start is called before the first frame update
+
+    float angleX = 0;
+    float angleY = 0;
+
+    float scale = 1;
+  
+    Vector2 endTouch;
+
+   
+    Vector2 endTouchT1;
+  
+    Vector2 endTouchT2;
+
+ float dir = 1;
+
+    bool dirSwitched = false;
+
+
     void Start()
     {
      
@@ -40,11 +66,6 @@ public class CameraRotationBehaviour : MonoBehaviour
         SetToPosition(Vector3.zero);
 
     }
-    float angleX = 0;
-    float angleY = 0;
-    // Update is called once per frame
-
-    
 
     public void SetToPosition(Vector3 pos, float maxDistance=10)
 
@@ -75,14 +96,7 @@ public class CameraRotationBehaviour : MonoBehaviour
 
 
   
-    float scale = 1;
-  
-    Vector2 endTouch;
 
-   
-    Vector2 endTouchT1;
-  
-    Vector2 endTouchT2;
 
 
     public void StartRotation(Touch t)
@@ -118,9 +132,7 @@ public class CameraRotationBehaviour : MonoBehaviour
         else if(div <= 1.2f)
             dir = 1;
     }
-    float dir = 1;
-
-    bool dirSwitched = false;
+   
     public void RotateCamera(Touch t)
     {
         Vector2 TouchDirection = t.deltaPosition;
@@ -129,7 +141,7 @@ public class CameraRotationBehaviour : MonoBehaviour
 
         if (difY > difX)
         {
-            float newAngle = angleX + -TouchDirection.y * Time.deltaTime * VRotateSpeed * RollingLogic.Instance.currentSpeed;       
+            float newAngle = angleX + -TouchDirection.y * Time.deltaTime * VRotateSpeed * RollingLogic.Instance.CurrentSpeed;       
             int prevYangle = Mathf.RoundToInt(cam.transform.eulerAngles.y);
             var localPos = new Vector3(Mathf.Cos(newAngle) * radius, Mathf.Sin(newAngle) * radius,
                 Mathf.Cos(newAngle) * radius);
@@ -143,7 +155,7 @@ public class CameraRotationBehaviour : MonoBehaviour
         }
         else
         {
-            targetEulers += Vector3.up * TouchDirection.x * HRotateSpeed * RollingLogic.Instance.currentSpeed * Time.deltaTime;
+            targetEulers += Vector3.up * TouchDirection.x * HRotateSpeed * RollingLogic.Instance.CurrentSpeed * Time.deltaTime;
         }
     }
     public void RotateCamera(float hInput, float vInput)
@@ -162,7 +174,7 @@ public class CameraRotationBehaviour : MonoBehaviour
         float difY = Mathf.Abs(dy);
         if (difY > difX)
         {
-            float newAngle = angleX + -(dy) * Time.deltaTime * VRotateSpeed * RollingLogic.Instance.currentSpeed;// *0.4f;
+            float newAngle = angleX + -(dy) * Time.deltaTime * VRotateSpeed * RollingLogic.Instance.CurrentSpeed;// *0.4f;
 
             newAngle = Mathf.Clamp(newAngle, AngleClamp.x, AngleClamp.y);
             var localPos = new Vector3(Mathf.Cos(newAngle) * radius, Mathf.Sin(newAngle) * radius, Mathf.Cos(newAngle) * radius);
@@ -177,7 +189,7 @@ public class CameraRotationBehaviour : MonoBehaviour
         }
         else
         {
-            targetEulers += Vector3.up * dx * HRotateSpeed * RollingLogic.Instance.currentSpeed * Time.deltaTime;
+            targetEulers += Vector3.up * dx * HRotateSpeed * RollingLogic.Instance.CurrentSpeed * Time.deltaTime;
                   
         }
     }
@@ -251,11 +263,6 @@ public class CameraRotationBehaviour : MonoBehaviour
     }
 
 
-    static public float turnAngleDelta;
-    const float pinchTurnRatio = Mathf.PI / 2;
-    const float minTurnAngle = 0;
-
-    static public float turnAngle;
 
     float Rotate(Touch touch1, Touch touch2)
     {
@@ -283,7 +290,7 @@ public class CameraRotationBehaviour : MonoBehaviour
             desiredRotation *= Quaternion.Euler(rotationDeg);
         }
 
-        targetEulers += Vector3.up * turnAngleDelta * HRotateSpeed * RollingLogic.Instance.currentSpeed * Time.deltaTime;
+        targetEulers += Vector3.up * turnAngleDelta * HRotateSpeed * RollingLogic.Instance.CurrentSpeed * Time.deltaTime;
        // transform.RotateAround(transform.position, Vector3.up, turnAngleDelta * HRotateSpeed * RollingLogic.Instance.currentSpeed);
 
         return turnAngleDelta;

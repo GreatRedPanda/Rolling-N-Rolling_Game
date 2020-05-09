@@ -32,7 +32,7 @@ public class LevelDataView: MonoBehaviour
             {
 
                 Renderer r = pooler.pools[i].PooledPrefab.GetComponent<Renderer>();
-                //Debug.Log(r);
+            
                 Colors.Add(pooler.pools[i].PoolName, r.sharedMaterial.GetColor("_Color"));
             }
 

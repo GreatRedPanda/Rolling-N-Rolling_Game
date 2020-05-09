@@ -57,8 +57,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _CellCountX: 20.055243
-    - _CellCountY: 15.139641
+    - _CellCountX: 18.271935
+    - _CellCountY: 13.793448
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -69,8 +69,8 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OffsetX: 0.97237873
-    - _OffsetY: 0.4301796
+    - _OffsetX: 0.86403275
+    - _OffsetY: 0.103275776
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
